@@ -14,7 +14,7 @@ const {
 } = process.env;
 
 const handleError = (error) => {
-  alert(error);
+  console.log(error);
 };
 
 mongoose.connect(MONGO_URL).catch((error) => handleError(error));
