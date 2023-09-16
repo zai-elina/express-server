@@ -1,46 +1,66 @@
 const User = require("../models/user");
 
-const getUsers = (request, response) => {
-  return User.find({})
-    .then((data) => {
-      response.status(200).send(data);
-    })
-    .catch((error) => response.status(500).send(error.message));
+const getUsers = async (request, response) => {
+  try {
+    const users = await User.find({});
+    response.status(200).send(users);
+  } catch (error) {
+    response.status(500).send(error.message);
+  }
 };
 
-const getUser = (request, response) => {
-  const { user_id } = request.params;
-  return User.findById(user_id)
-    .then((data) => {
-      response.status(200).send(data);
-    })
-    .catch((error) => response.status(500).send(error.message));
-};
+const getUser = async (request, response) => {
+  try {
+    const { user_id } = request.params;
+    const user = await User.findById(user_id);
 
-const createUser = (request, response) => {
-  return User.create({ ...request.body })
-    .then((user) => {
-      response.status(201).send(user);
-    })
-    .catch((error) => response.status(500).send(error.message));
-};
-
-const updateUser = (request, response) => {
-  const { user_id } = request.params;
-  return User.findByIdAndUpdate(user_id, { ...request.body })
-    .then((user) => {
+    if (!user) {
+      response.status(404).send("User not found");
+    } else {
       response.status(200).send(user);
-    })
-    .catch((error) => response.status(500).send(error.message));
+    }
+  } catch (error) {
+    response.status(500).send(error.message);
+  }
 };
 
-const deleteUser = (request, response) => {
-  const { user_id } = request.params;
-  return User.findByIdAndDelete(user_id)
-    .then(() => {
+const createUser = async (request, response) => {
+  try {
+    const user = await User.create({ ...request.body });
+    response.status(201).send(user);
+  } catch (error) {
+    response.status(500).send(error.message);
+  }
+};
+
+const updateUser = async (request, response) => {
+  try {
+    const { user_id } = request.params;
+    const user = await User.findByIdAndUpdate(user_id, { ...request.body });
+
+    if (!user) {
+      response.status(404).send("User not found");
+    } else {
+      response.status(200).send(user);
+    }
+  } catch (error) {
+    response.status(500).send(error.message);
+  }
+};
+
+const deleteUser = async (request, response) => {
+  try {
+    const { user_id } = request.params;
+    const user = await User.findByIdAndDelete(user_id);
+
+    if (!user) {
+      response.status(404).send("User not found");
+    } else {
       response.status(200).send("Success");
-    })
-    .catch((error) => response.status(500).send(error.message));
+    }
+  } catch (error) {
+    response.status(500).send(error.message);
+  }
 };
 
 module.exports = { getUsers, getUser, createUser, updateUser, deleteUser };
